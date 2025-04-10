@@ -492,7 +492,79 @@ header {
   max-width: 240px;
 }
 
-/* === REGISTRERING === */
+/* Checkout */
+
+#checkout-main {
+  display: grid;
+  grid-template-columns: 100%;
+  border: 1px solid #b34040;
+  justify-content: center;
+  gap: 10px;
+}
+
+#checkout-main-redirect-btn {
+  width: 50%;
+  padding: 0.8rem 2rem;
+  margin: auto;
+  background-color: #C8102E;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 2.5rem;
+  cursor: pointer;
+}
+
+#checkout-main-redirect-btn:hover {
+  background-color: #921328;
+}
+
+#order-container{
+  width: 70%;
+  justify-self: center;
+}
+
+.order-item {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 80px 10% 40% 10%;
+  height: 100px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.checkout-img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border: 1px solid #b34040;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.order-payment {
+  display: flex;
+  justify-content: center;
+}
+
+#purchase-button {
+  width: 50%;
+  padding: 0.8rem 2rem;
+  margin: auto;
+  background-color: #4CAF50;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 2.5rem;
+  cursor: pointer;
+}
+
+#purchase-button:hover {
+  background-color: #45a049;
+}
+
 
 .container {
   width: 100%;

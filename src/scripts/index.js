@@ -1,14 +1,13 @@
-import { fetchProducts, addProducts, checkAdmin, getCategories } from "../utils/api.js";
+import { fetchProducts, addProducts, checkAdmin, getCategories, updateProduct } from "../utils/api.js";
 import { cartBalanceUpdate, updateLoginLink } from "../utils/functions.js";
 
-document.addEventListener("DOMContentLoaded", function () {
-  loadProducts();
+document.addEventListener("DOMContentLoaded", async function () {
+  let isAdmin = await checkAdmin();;
+  loadProducts(isAdmin);
   updateCartItems();
   updateLoginLink();
   testCheckAdmin();
-  addProductForm();
-
-
+  addProductForm(isAdmin);
 });
 
 
@@ -17,7 +16,7 @@ async function testCheckAdmin() {
 
 }
 
-async function loadProducts() {
+async function loadProducts(isAdmin) {
   const productsContainer = document.getElementById("products");
   productsContainer.innerHTML = "<p>Loading products...</p>";
 
@@ -27,8 +26,13 @@ async function loadProducts() {
 
     if (products.length > 0) {
       products.forEach((product) => {
-        const productCard = createProductCard(product);
-        productsContainer.appendChild(productCard);
+        if (isAdmin) {
+          const productCard = createAdminProductCard(product);
+          productsContainer.appendChild(productCard);
+        } else {
+          const productCard = createProductCard(product);
+          productsContainer.appendChild(productCard);
+        }
       });
     } else {
       productsContainer.innerHTML = "<p>No products available.</p>";
@@ -39,13 +43,42 @@ async function loadProducts() {
   }
 }
 
-function createProductCard(product) {
+function createAdminProductCard(product) {
   const element = document.createElement("div");
+  let productStock = "Lager: " + product.stock + "st";
   element.className = "product-card";
   element.innerHTML = `
     <img src="${product.imageUrl}" alt="Bild på ${product.name}" class="prod-card-img">
     <h3>${product.name}</h3>
     <p>$${product.price.toFixed(2)}</p>
+    <p>${productStock}</p>
+    <button class="view-product-btn">Visa produkt</button>
+    <button class="edit-product-btn">Redigera produkt</button>
+    <button class="add-to-cart-btn">Lägg i varukorg</button>
+  `;
+
+  element.querySelector(".add-to-cart-btn").addEventListener("click", () => {
+    addToCart(product);
+  });
+  element.querySelector(".edit-product-btn").addEventListener("click", () => {
+    editProduct(product);
+  });
+  element.querySelector(".view-product-btn").addEventListener("click", () => {
+    window.location.href = `product.html?id=${product._id}`;
+  });
+
+  return element;
+}
+
+function createProductCard(product) {
+  const element = document.createElement("div");
+  let productStock = "Lager: " + product.stock + "st";
+  element.className = "product-card";
+  element.innerHTML = `
+    <img src="${product.imageUrl}" alt="Bild på ${product.name}" class="prod-card-img">
+    <h3>${product.name}</h3>
+    <p>$${product.price.toFixed(2)}</p>
+    <p>${productStock}</p>
     <button class="view-product-btn">Visa produkt</button>
     <button class="add-to-cart-btn">Lägg i varukorg</button>
   `;
@@ -53,7 +86,6 @@ function createProductCard(product) {
   element.querySelector(".add-to-cart-btn").addEventListener("click", () => {
     addToCart(product);
   });
-
   element.querySelector(".view-product-btn").addEventListener("click", () => {
     window.location.href = `product.html?id=${product._id}`;
   });
@@ -62,16 +94,17 @@ function createProductCard(product) {
 }
 
 
-function addProductForm() {
-  try {
-    let formContainer = document.getElementById("addProductContainer");
-    let form = document.createElement("form")
-    form.setAttribute("id", "addProduct");
-    form.innerHTML = `
+function addProductForm(isAdmin) {
+  if (isAdmin) {
+    try {
+      let formContainer = document.getElementById("addProductContainer");
+      let form = document.createElement("form")
+      form.setAttribute("id", "addProduct");
+      form.innerHTML = `
         <label for="name">Namn på produkt</label>
         <input type="text" name="name" id="name" class="prodInp" required>
         <label for="ImgUrl">Bild url</label>
-        <input type="text" class="prodInp" id="imageUrl">
+        <input type="text" class="prodInp" id="imageUrl" required>
         <label for="price">Pris</label>
         <input type="number" name="price" id="price" class="prodInp" min="0.01" value="0" step="any" required>
         <label for="category">Kategori</label>
@@ -84,19 +117,21 @@ function addProductForm() {
         <input type="number" name="stock" id="stock" class="prodInp" min="0" value="0">
         <button type="submit">Lägg till</button>
     `
-    formContainer.innerHTML = ""
-    formContainer.appendChild(form);
-    fillCategory();
+      formContainer.innerHTML = ""
+      formContainer.appendChild(form);
+      fillCategory();
 
-    document.getElementById("addProduct").addEventListener("submit", function (e) {
-      e.preventDefault();
-      addProduct();
-      loadProducts();
-    });
+      document.getElementById("addProduct").addEventListener("submit", function (e) {
+        e.preventDefault();
+        addProduct();
+        loadProducts();
+      });
 
-  } catch (error) {
-    console.error("Error showing product form: ", error)
+    } catch (error) {
+      console.error("Error showing product form: ", error)
+    }
   }
+
 }
 
 async function fillCategory() {
@@ -132,12 +167,38 @@ async function addProduct() {
   }
 }
 
+async function editProduct(product) {
+  let name = product.name;
+  let description = product.description;
+  let price = product.price;
 
+  if (confirm("Vill du byta namn på produkten?")) {
+    let newName = prompt(`Skriv in nytt namn för produkten. ${product.name}`, product.name);
+    if (newName) {
+      name = newName;
+    }
+  }
+  if (confirm("Vill du byta beskrivning för produkten?")) {
+    let newDesc = prompt(`Skriv in ny beskrivning för produkten. ${product.description}`, product.description);
+    if (newDesc) {
+      description = newDesc;
+    }
+  }
+  if (confirm("Vill du byta pris på produkten?")) {
+    let newPrice = prompt(`Skriv in nytt pris för produkten. ${product.price}`, product.price);
+    if (newPrice && !isNaN(newPrice)) {
+      price = parseFloat(newPrice);
+    }
+  }
+  let editedProduct = { name, description, price };
+  await updateProduct(editedProduct, product._id);
+  loadProducts();
+}
 
 function addToCart(product) {
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   const existingProductId = cart.findIndex(item => JSON.stringify(item.product) === JSON.stringify(product));
-
+  console.log(cart)
   if (existingProductId !== -1) {
     let existingProduct = cart[existingProductId];
     let updatedQuantity = existingProduct.quantity + 1;
@@ -148,11 +209,17 @@ function addToCart(product) {
       existingProduct.quantity = updatedQuantity;
     }
     cart[existingProductId] = existingProduct;
+    console.log(cart)
   } else {
-    cart.push({
-      product: product,
-      quantity: 1
-    });
+    if (product.stock > 0) {
+      cart.push({
+        product: product,
+        quantity: 1
+      });
+      console.log(cart)
+    } else {
+      alert("out of stock")
+    }
   }
 
   localStorage.setItem('cart', JSON.stringify(cart));

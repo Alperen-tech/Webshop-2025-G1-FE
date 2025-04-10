@@ -4,12 +4,96 @@
 <head>
   <meta charset="UTF-8" />
   <title>Betalning - Hakim Livs</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
 <body>
-  <h1>Betalning</h1>
-  <p>Här kommer betalningssidan att vara. Detta är en placeholder.</p>
-  <a href="index.html">Tillbaka till startsidan</a>
-</body>
+
+  <div class="top-info-bar"></div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <a href="index.html" class="logo">Hakim Livs</a>
+
+      <div class="search-container">
+        <input type="text" placeholder="Sök..." />
+        <i class="fas fa-search search-icon"></i>
+      </div>
+
+      <div class="header-icons">
+        <a href="login.html" class="icon-link">
+          <i class="fas fa-user"></i> Logga in
+        </a>
+        <a href="cart.html" class="icon-link">
+          <i class="fas fa-shopping-bag"></i>
+          <p id="cartBalance">$0</p>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <body>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="checkout-main">
+      <button onclick="window.location.href=`index.html`;" id="checkout-main-redirect-btn">Handla mer</button>
+      <div id="order-container"></div>
+      <div class="order-payment">
+        <h2>Att betala:</h2>
+        <h2 id="order-sum-payment"></h2>
+      </div>
+      <button id="purchase-button">Slutför Köp</button>
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-container">
+
+        <!-- LÄNKARNA ÄR TOMMA-->
+        <div class="footer-section">
+          <h3>Hakim Livs made simple</h3>
+          <a href="#">Så funkar Hakim Livs</a>
+          <a href="#">Klimatpåverkan</a>
+          <a href="#">Leverans &amp; frakt</a>
+          <a href="#">Vanliga frågor och svar</a>
+        </div>
+
+        <div class="footer-section">
+          <h3>The fine print</h3>
+          <a href="#">Cookie Policy</a>
+          <a href="#">Integritetspolicy</a>
+          <a href="#">Allmänna villkor</a>
+          <a href="#">Cookie-inställningar</a>
+        </div>
+
+        <div class="footer-section">
+          <h3>Join Hakim Livs</h3>
+          <a href="#">Bli leverantör</a>
+          <a href="#">Jobba hos oss</a>
+          <a href="#">Pressmeddelanden</a>
+          <a href="#">Nyhetsbrev</a>
+        </div>
+      </div>
+
+      <div class="footer-icon">
+        <img src="https://cdn-icons-png.freepik.com/512/3095/3095583.png" alt="Kontakt" width="50px" height="50px"
+          style="filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(251deg) brightness(105%) contrast(103%);">
+        <a href="#">Kontakt</a>
+        <img src="https://cdn-icons-png.freepik.com/512/11675/11675289.png" alt="Kundservice" width="50px" height="50px"
+          style="filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(251deg) brightness(105%) contrast(103%);">
+        <a href="#">Kundservice</a>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2025 Hakim Livs. Alla rättigheter förbehållna.</p>
+      </div>
+
+    </footer>
+    <!-- PAGE-SPECIFIC JAVASCRIPT -->
+    <script type="module" src="./src/scripts/checkout.js"></script>
+  </body>
 
 </html>
