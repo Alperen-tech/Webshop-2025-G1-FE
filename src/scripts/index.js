@@ -26,14 +26,14 @@ async function loadProducts(isAdmin) {
 
     if (products.length > 0) {
       products.forEach((product) => {
-        if (isAdmin) {
-          const productCard = createAdminProductCard(product);
-          productsContainer.appendChild(productCard);
-        } else {
-          const productCard = createProductCard(product);
-          productsContainer.appendChild(productCard);
-        }
+        const card = isAdmin
+          ? createAdminProductCard(product)
+          : createProductCard(product);
+        productsContainer.appendChild(card);
       });
+
+      // Setup kategori-filter efter att produkter laddats
+      setupCategoryFilters(products, isAdmin);
     } else {
       productsContainer.innerHTML = "<p>No products available.</p>";
     }
@@ -42,6 +42,7 @@ async function loadProducts(isAdmin) {
     productsContainer.innerHTML = "<p>Failed to load products.</p>";
   }
 }
+
 
 function createAdminProductCard(product) {
   const element = document.createElement("div");
@@ -133,7 +134,7 @@ function addProductForm(isAdmin) {
   }
 
 }
-
+/* Ändrat lite för kategorier */
 async function fillCategory() {
   try {
     let categories = await getCategories();
@@ -225,7 +226,7 @@ function addToCart(product) {
   localStorage.setItem('cart', JSON.stringify(cart));
   cartBalanceUpdate();
 }
-
+/* Fixed for Category---------------------- */
 async function updateCartItems() {
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
   const products = await fetchProducts();
@@ -248,4 +249,35 @@ async function updateCartItems() {
 
   localStorage.setItem('cart', JSON.stringify(cart));
   cartBalanceUpdate();
+}
+
+// Filtrera produkter utifrån kategori
+function setupCategoryFilters(products, isAdmin) {
+  const categoryLinks = document.querySelectorAll(".category-menu a");
+
+  categoryLinks.forEach(link => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const selectedCategory = link.dataset.category;
+
+      const productsContainer = document.getElementById("products");
+      productsContainer.innerHTML = "";
+
+      const filtered = selectedCategory === "Alla"
+        ? products
+        : products.filter(product => product.category?.name === selectedCategory);
+         /*ändrat på product.filter-------------------------- */
+
+      if (filtered.length > 0) {
+        filtered.forEach((product) => {
+          const card = isAdmin
+            ? createAdminProductCard(product)
+            : createProductCard(product);
+          productsContainer.appendChild(card);
+        });
+      } else {
+        productsContainer.innerHTML = "<p>Inga produkter i den kategorin.</p>";
+      }
+    });
+  });
 }
